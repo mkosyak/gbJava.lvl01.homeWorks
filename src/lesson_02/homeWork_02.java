@@ -73,11 +73,11 @@ public class homeWork_02 {
 //              checkBalance([1, 1, 1, || 2, 1]) --> true,
 //    граница показана символами ||, эти символы в массив не входят.
         System.out.println("\n\r" + " === Task_06.(**)");
-        int array_06[] = new int[]{2, 2, 2, 2, 6 , 1, 2, 10, 1};
+        int array_06[] = new int[]{2, 2, 2, 2, 6, 1, 2, 10, 1};
 //        int array_06[] = new int[]{2, 2, 2, 2, 1, 2, 10, 1};
 //        int array_06[] = new int[]{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144};
 
-        System.out.println("Array for check:" + Arrays.toString(array_06));
+        System.out.println("Array for check: " + Arrays.toString(array_06));
         boolean arrayBalanced = checkBalance_A(array_06);
         System.out.println(">>>> Checking result->" + arrayBalanced);
 
@@ -85,11 +85,16 @@ public class homeWork_02 {
 // 7.****   Написать метод, которому на вход подается одномерный массив и число n (может быть положительным,
 //      или отрицательным), при этом метод должен сместить все элементы массива на n позиций. Элементы смещаются
 //      циклично. Для усложнения задачи нельзя пользоваться вспомогательными массивами.
-//   Примеры:    [ 1, 2, 3 ] при n =  1 (на один вправо) -> [ 3, 1, 2 ]; [ 3, 5, 6, 1]
-//                           при n = -2 (на два влево)   -> [ 6, 1, 3, 5 ].
+//   Примеры:    [ 1, 2, 3 ]   при n =  1 (на один вправо) -> [ 3, 1, 2 ];
+//               [ 3, 5, 6, 1] при n = -2 (на два влево)   -> [ 6, 1, 3, 5 ].
 //      При каком n в какую сторону сдвиг можете выбирать сами.
         System.out.println("\n\r" + " === Task_07.(****)");
+        int array_07[] = new int[]{0, 11, 22, 33, 44, 55, 66, 77, 88, 99};
+        final int ci_shiftPos = 6;  // negative:-> shift left | positive:-> right
 
+        System.out.println("Array for shift: " + Arrays.toString(array_07));
+        array_07 = shiftArrayByN_Positions(ci_shiftPos, array_07);
+        System.out.println("Array after shift: " + Arrays.toString(array_07));
     }
 
     // ========================================
@@ -196,25 +201,24 @@ public class homeWork_02 {
 
 //    the 1st boundary is counted from the left
             sumLeft_1 = getArraySum(inArray, 0, i);
-            sumRight_1 = getArraySum(inArray, i, inArray.length );
+            sumRight_1 = getArraySum(inArray, i, inArray.length);
             System.out.println("  leftBoundary: (leftSum: " + sumLeft_1 + "; " + "righttSum: " + sumRight_1);
 
 //    the 2nd boundary is counted from the right
             sumLeft_2 = getArraySum(inArray, 0, inArray.length - i);
-            sumRight_2 = getArraySum(inArray, inArray.length - i, inArray.length );
+            sumRight_2 = getArraySum(inArray, inArray.length - i, inArray.length);
             System.out.println("  rightBoundary: (leftSum: " + sumLeft_2 + "; " + "righttSum: " + sumRight_2);
 
             if (sumLeft_1 == sumRight_1) {
                 System.out.println("Found successfully at iteration: " + i);
                 return true;
-            }
-            else if (sumLeft_2 == sumRight_2) {
+            } else if (sumLeft_2 == sumRight_2) {
                 System.out.println("Found successfully at iteration: " + i);
                 return true;
             }
         }
 
-        System.out.println("No matching found, iterations: " + iterationCount );
+        System.out.println("No matching found, iterations: " + iterationCount);
         return false;
     }
 
@@ -228,9 +232,56 @@ public class homeWork_02 {
         return sumOfElements;
     }
 
-// ========================================
-//    public static int[] <method_Name>(int[] inArray) {}
+    // ========================================
+    public static int[] shiftArrayByN_Positions(int shiftPos, int[] inArray) {
+        int shiftTimes = Math.abs(shiftPos);
+        int i = 1;
 
+        if (shiftPos > 0) {                                                                 // shift RIGHT
+            System.out.println("Shift RIGHT by " + shiftTimes + " positions");
+            while (i <= shiftTimes) {
+                inArray = shiftRightOnce(inArray);
+                i++;
+            }
 
+        } else if (shiftPos < 0) {                                                          // shift LEFT
+            System.out.println("Shift LEFT by " + shiftTimes + " positions");
+            while (i <= shiftTimes) {
+                inArray = shiftLeftOnce(inArray);
+                i++;
+            }
 
+        } else {                                                                            // 0 - NO shift
+            System.out.println(">>No shift performed");
+        }
+
+        return inArray;
+    }
+
+    // ========================================
+    public static int[] shiftRightOnce(int[] inArray) {
+        int arrayIdxLastElem = inArray.length - 1;
+        int dropDownArrayElement = inArray[arrayIdxLastElem];
+
+        for (int i = 0; i < arrayIdxLastElem; i++) {
+            inArray[arrayIdxLastElem - i] = inArray[arrayIdxLastElem - i - 1];
+        }
+        inArray[0] = dropDownArrayElement;
+
+        return inArray;
+    }
+
+    // ========================================
+
+    public static int[] shiftLeftOnce(int[] inArray) {
+        int arrayIdxLastElem = inArray.length - 1;
+        int dropDownArrayElement = inArray[0];
+
+        for (int i = 1; i < inArray.length; i++) {
+            inArray[i - 1] = inArray[i];
+        }
+        inArray[arrayIdxLastElem] = dropDownArrayElement;
+
+        return inArray;
+    }
 }
