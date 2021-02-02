@@ -1,5 +1,5 @@
 package lesson_01;
-//  Pull request URL:
+//  Pull request URL: https://github.com/mkosyak/gbJava.lvl01.homeWorks/pull/1
 
 public class homeWork_01 {
     /*
