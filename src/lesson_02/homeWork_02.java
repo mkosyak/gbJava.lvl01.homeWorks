@@ -2,7 +2,7 @@ package lesson_02;
 
 import java.util.*;
 
-//   Pull request URL:
+//   Pull request URL: https://github.com/mkosyak/gbJava.lvl01.homeWorks/pull/2
 public class homeWork_02 {
     /*
     Урок 2. Основные конструкции * */
