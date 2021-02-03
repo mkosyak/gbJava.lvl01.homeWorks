@@ -2,7 +2,7 @@ package lesson_02;
 
 import java.util.*;
 
-//   Pull request URL: https://github.com/mkosyak/gbJava.lvl01.homeWorks/pull/2
+//   Pull request URL: https://github.com/mkosyak/gbJava.lvl01.homeWorks/pull/3
 public class homeWork_02 {
     /*
     Урок 2. Основные конструкции * */
@@ -90,11 +90,11 @@ public class homeWork_02 {
 //      При каком n в какую сторону сдвиг можете выбирать сами.
         System.out.println("\n\r" + " === Task_07.(****)");
         int array_07[] = new int[]{0, 11, 22, 33, 44, 55, 66, 77, 88, 99};
-        final int ci_shiftPos = 6;  // negative:-> shift left | positive:-> right
+        final int ci_shiftPos = -16;  // negative:-> shift left | positive:-> right
 
         System.out.println("Array for shift: " + Arrays.toString(array_07));
         array_07 = shiftArrayByN_Positions(ci_shiftPos, array_07);
-        System.out.println("Array after shift: " + Arrays.toString(array_07));
+
     }
 
     // ========================================
@@ -197,23 +197,23 @@ public class homeWork_02 {
 
         for (int i = 1; i <= chkRange; i++) {
             iterationCount = i;
-            System.out.println("+++++ Current iteration: " + i);
+            System.out.println("\n\r ++++ Current iteration: " + i);
 
 //    the 1st boundary is counted from the left
             sumLeft_1 = getArraySum(inArray, 0, i);
             sumRight_1 = getArraySum(inArray, i, inArray.length);
-            System.out.println("  leftBoundary: (leftSum: " + sumLeft_1 + "; " + "righttSum: " + sumRight_1);
+            System.out.println("  leftBoundary check: (leftSum: " + sumLeft_1 + "; " + "righttSum: " + sumRight_1);
 
 //    the 2nd boundary is counted from the right
             sumLeft_2 = getArraySum(inArray, 0, inArray.length - i);
             sumRight_2 = getArraySum(inArray, inArray.length - i, inArray.length);
-            System.out.println("  rightBoundary: (leftSum: " + sumLeft_2 + "; " + "righttSum: " + sumRight_2);
+            System.out.println("  rightBoundary check: (leftSum: " + sumLeft_2 + "; " + "righttSum: " + sumRight_2);
 
             if (sumLeft_1 == sumRight_1) {
-                System.out.println("Found successfully at iteration: " + i);
+                System.out.println("*** Found successfully at iteration: " + i);
                 return true;
             } else if (sumLeft_2 == sumRight_2) {
-                System.out.println("Found successfully at iteration: " + i);
+                System.out.println("*** Found successfully at iteration: " + i);
                 return true;
             }
         }
@@ -241,6 +241,7 @@ public class homeWork_02 {
             System.out.println("Shift RIGHT by " + shiftTimes + " positions");
             while (i <= shiftTimes) {
                 inArray = shiftRightOnce(inArray);
+                System.out.println(">> Array after iteration " + i + " -> " + Arrays.toString(inArray));
                 i++;
             }
 
@@ -248,6 +249,7 @@ public class homeWork_02 {
             System.out.println("Shift LEFT by " + shiftTimes + " positions");
             while (i <= shiftTimes) {
                 inArray = shiftLeftOnce(inArray);
+                System.out.println(">> Array after iteration " + i + " -> " + Arrays.toString(inArray));
                 i++;
             }
 
