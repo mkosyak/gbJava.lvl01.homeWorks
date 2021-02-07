@@ -176,7 +176,7 @@ public class homeWork_02 {
         int[] minMaxValues = new int[]{inArray[0], inArray[0]};
 
 //   minMaxValues[0] - minimum Val; minMaxValues[1] - MAXimum Val;
-        for (int i = 0; i < inArray.length; i++) {
+        for (int i = 1; i < inArray.length; i++) {
             if (inArray[i] < minMaxValues[0]) {         // get Minimum Value
                 minMaxValues[0] = inArray[i];
             }

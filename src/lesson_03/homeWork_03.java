@@ -163,7 +163,7 @@ public class homeWork_03 {
             if (i <= etalon.length()) {
                 for (int j = 0; j < etalon.length() && j <= retValLen; j++) {
                     if (etalon.charAt(j) == Character.toLowerCase(compared.charAt(i))) {
-                        sb.setCharAt(j, etalon.charAt(j));
+                        sb.setCharAt(j, Character.toUpperCase(etalon.charAt(j)));
                     }
                 }
             } else break;
