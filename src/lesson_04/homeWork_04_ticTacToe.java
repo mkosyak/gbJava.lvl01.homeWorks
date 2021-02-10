@@ -104,18 +104,18 @@ public class homeWork_04_ticTacToe {
         return true;
     }
 
-    public static boolean chkVertLine4Win(char pa_field[][], char chkSymbol, int idx) {
+    public static boolean chkVertLine4Win(char pa_field[][], char chkSymbol, int idxCol) {
 //  ------------------------------------------------
         for (int i = 0; i < pa_field.length; i++) {
-            if (pa_field[idx][i] != chkSymbol) return false;
+            if (pa_field[i][idxCol] != chkSymbol) return false;
         }
         return true;
     }
 
-    public static boolean chkHrzLine4Win(char pa_field[][], char chkSymbol, int idx) {
+    public static boolean chkHrzLine4Win(char pa_field[][], char chkSymbol, int idxRow) {
 //  ------------------------------------------------
         for (int i = 0; i < pa_field.length; i++) {
-            if (pa_field[i][idx] != chkSymbol) return false;
+            if (pa_field[idxRow][i] != chkSymbol) return false;
         }
         return true;
     }
@@ -275,6 +275,7 @@ public class homeWork_04_ticTacToe {
         for (int i = 0; i < pa_field.length; i++) {
             for (int j = 0; j < pa_field[i].length; j++) {
                 pa_field[i][j] = cc_initTicTacSym;
+//                pa_field[i][j] = Character.forDigit(i,10);
             }
         }
     }
