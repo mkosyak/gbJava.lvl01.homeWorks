@@ -1,79 +1,211 @@
 package lesson_04;
 
-
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class homeWork_04_ticTacToe {
-    public static final char cc_crossSym = 'X';
-    public static final char cc_zeroSym = 'O';
+    //  ---- C O N S T A N T S
     public static final char cc_initTicTacSym = '.';
-    public static final int ci_fieldDimDft = 3;
-    public static final int ci_fieldDimMin = 2;
     public static final int ci_fieldDimMax = 9;
-    public static int gi_fieldDim;
-    public static boolean gb_playerAiRun;
-    public static boolean gb_playerRun;
-
+    public static final int ci_playersMin = 2;
+    public static final int ci_playersMax = 5;
+    public static final int ci_playerTypeAi = 0;
+    public static final int ci_playerTypeHuman = 1;
+    public static final String cv_playerTypeAi = "AI";
+    public static final String cv_playerTypeHuman = "Human";
 
     public static void main(String[] args) {
 // -- Start Message
         System.out.println("<<< -== Tic-Tac Toe Game ==- >>> \n");
 
 // -- Initialization:
+// ---- console Input
         Scanner input = new Scanner(System.in);
 
-// ---- ... define field dimension
-        gi_fieldDim = initFieldDim(input);
-        char[][] field = new char[gi_fieldDim][gi_fieldDim];
+// ---- set number of players
+        int numOfPlayers = setNumOfPlayers(input);
 
-// ---- ... field's cell initial value
-        initPlayingField(field);
+// ---- set players' attributes via arrays (access by index)
+        String playerName[] = new String[numOfPlayers];         // unique name of the player
+        int playerType[] = new int[numOfPlayers];               // 0 = AI; 1 = Human; ...
+        char playerMoveSymbol[] = new char[numOfPlayers];       // symbol to play per each player
+        initPlayers(input, playerName, playerType, playerMoveSymbol);
 
-// ---- ... assignment playing symbol for the players
-        char playerSymbol = assgnPlayerSymb(input);
-        char aiSymbol = assgnAiSymb(playerSymbol);
+// ---- init of the playing field
+        int fieldDim = initFieldDim(input, numOfPlayers);       //  set dimension
+        char[][] field = new char[fieldDim][fieldDim];
+        initPlayingField(field);                                // set cells into initial value
 
-// ---- ... who moves the first: Player/AI
-        gb_playerRun = true;        // default: Player starts first
-        gb_playerAiRun = false;
+// -- Start Game Main Cycle
+        mainGameCycle(input, field, playerName, playerType, playerMoveSymbol);
 
-// -- Game Move
-// ---- ... first step
-        boolean keepOnPlay = true;
-        int moveCount = 0;                  // the moveCount number
-        outputField(field, moveCount, ' ');
+// -- Final Message - Exit
+        System.out.println("\n <<< -== Tic-Tac Toe - GAME IS OVER ==- >>> \n");
 
-// ---- ... moveCount cycle
-        String cv_prtf_winnerMsg = "--==<< Congratulations! %s has won! >>==--";
-        do {
-            keepOnPlay = !chkDIsDraw(field);
-            moveCount++;
-            if (gb_playerRun && keepOnPlay) {
-                movePlayer(input, field, playerSymbol);
-                outputField(field, moveCount, playerSymbol);
-                if (chkIsWinner(field, playerSymbol)) {
-                    System.out.printf(cv_prtf_winnerMsg, "Player");
-                    break;
-                }
-                gb_playerRun = false;
-                gb_playerAiRun = true;
-            } else if (gb_playerAiRun && keepOnPlay) {
-                moveAiPlayerRnd(input, field, aiSymbol);
-                outputField(field, moveCount, aiSymbol);
-                if (chkIsWinner(field, aiSymbol)) {
-                    System.out.printf(cv_prtf_winnerMsg, "AI");
-                    break;
-                }
-                gb_playerRun = true;
-                gb_playerAiRun = false;
-            }
-        } while (keepOnPlay);
     }
 
     /*    =================== P R O C E D U R E S ==============================
      */
+    public static void mainGameCycle(Scanner input, char[][] field,
+                                     String[] playerName, int[] playerType, char[] playerMoveSymbol) {
+//  ------------------------------------------------
+// ---- ... first step
+        boolean keepOnPlay = true;
+        int roundIdx = 1;                   // the current Round index
+        int playerMovIdx = 0;               // the current Player_Move index
+        outputField(field, roundIdx, playerMovIdx, " !!! START!!!");
+
+// ---- ... moveCount cycle
+        String cv_prtfMsg_winner = "--==<< Congratulations! %s has won! >>==--";
+        do {
+            outputFieldHdr(field.length, roundIdx, playerMovIdx + 1,
+                    playerName[playerMovIdx], playerMoveSymbol[playerMovIdx]);
+            if (playerType[playerMovIdx] == ci_playerTypeHuman && keepOnPlay) {
+                moveHumanPlayer(input, field, playerMoveSymbol[playerMovIdx]);
+            } else if (playerType[playerMovIdx] == ci_playerTypeAi && keepOnPlay) {
+                moveAiPlayerRnd(field, playerMoveSymbol[playerMovIdx]);
+//            ... = getNewCoord4AiMove_01(field, playerMoveSymbol[playerMovIdx]); // not implemented
+//            ... = getNewCoord4AiMove_02(field, playerMoveSymbol[playerMovIdx]); // not implemented
+            }
+            outputField(field, roundIdx, playerMovIdx, playerName[playerMovIdx]);
+
+            if (chkDIsDraw(field)) {
+                keepOnPlay = false;
+            } else if (chkIsWinner(field, playerMoveSymbol[playerMovIdx])) {
+                System.out.printf(cv_prtfMsg_winner, playerName[playerMovIdx]);
+                keepOnPlay = false;
+            } else {
+                playerMovIdx++;
+                if (playerMovIdx == playerName.length) { //check for new Round of the players
+                    playerMovIdx = 0;
+                    roundIdx++;
+                }
+            }
+        }
+        while (keepOnPlay);
+    }
+
+    public static void initPlayers(Scanner input, String playerName[], int playerType[], char playerMoveSymbol[]) {
+//  ------------------------------------------------
+        for (int i = 0; i < playerName.length; i++) {
+            String cv_prtlfMsg_initPlayer = "%n  ----- Player %d";
+            System.out.printf(cv_prtlfMsg_initPlayer, i + 1);
+
+            do {
+                playerName[i] = inputPlayerName(input, i);
+            }
+            while (!chkPlayerNamebIsUniq(playerName, playerName[i], i));
+
+            do {
+                playerMoveSymbol[i] = inputPlayerSymb(input, playerName[i]);
+            }
+            while (!chkPlayerSymbIsUniq(playerMoveSymbol, playerMoveSymbol[i], i));
+            playerType[i] = inputPlayerType(input, playerName[i]);
+        }
+    }
+
+    public static boolean chkPlayerNamebIsUniq(String pa_names[], String chkName, int playerIdx) {
+//  ------------------------------------------------
+        String cv_prtf_nameUsedMsg = "%n<<< Name '%s' already assigned, select another one! >>>%n";
+        String cv_prtf_nameOkMsg = " >> Name '%s' is OK! %n";
+
+        for (int i = 0; i < playerIdx; i++) {   // only previous, do not check current player
+            if (pa_names[i].equals(chkName)) {
+                System.out.printf(cv_prtf_nameUsedMsg, chkName);
+                return false;
+            }
+        }
+        System.out.printf(cv_prtf_nameOkMsg, chkName);
+        return true;
+    }
+
+    public static boolean chkPlayerSymbIsUniq(char pa_symbols[], char chkSymb, int playerIdx) {
+//  ------------------------------------------------
+        String cv_prtf_symbUsedMsg = "%n<<< Symbol '%c' already assigned, select another one! >>>%n";
+        String cv_prtf_symbOkMsg = " >> Symbol '%c' is OK! %n";
+
+        for (int i = 0; i < playerIdx; i++) {   // only previous, do not check current player
+            if (pa_symbols[i] == chkSymb) {
+                System.out.printf(cv_prtf_symbUsedMsg, chkSymb);
+                return false;
+            }
+        }
+        System.out.printf(cv_prtf_symbOkMsg, chkSymb);
+        return true;
+    }
+
+    public static char inputPlayerSymb(Scanner input, String name) {
+//  ------------------------------------------------
+        String cv_printfMsg_enterPlayers = "Enter the player symbol to play [any symbol] for player %s: ";
+
+        System.out.printf(cv_printfMsg_enterPlayers, name);
+        String symOfPlayer2Move = input.next();
+        return symOfPlayer2Move.charAt(0);
+    }
+
+    public static int inputPlayerType(Scanner input, String name) {
+//  ------------------------------------------------
+        String cv_printfMsg_enterPlayers = "Enter the player type [%d=%s/ %d=%s/...] for player %s: ";
+        String cv_printfMsg_wrongRng = "%n >> Value %d is out of range, please re-enter.%n";
+        String cv_printfMsg_wrongVal = "%n<<< Wrong value '%s' try again! >>>%n";
+
+        int numOfPlayers = ci_playersMin;
+        boolean chkCrdIsCorrect = false;
+
+        do {
+            try {
+                System.out.printf(cv_printfMsg_enterPlayers, ci_playerTypeAi, cv_playerTypeAi,
+                        ci_playerTypeHuman, cv_playerTypeHuman, name);
+                numOfPlayers = input.nextInt();
+
+                if (numOfPlayers < ci_playerTypeAi || numOfPlayers > ci_playerTypeHuman) {
+                    System.out.printf(cv_printfMsg_wrongRng, numOfPlayers);
+                    continue;
+                } else {
+                    chkCrdIsCorrect = true;
+                }
+            } catch (InputMismatchException e) {                             //Exception or InputMismatchException
+                System.out.printf(cv_printfMsg_wrongVal, input.next());
+            }
+        } while (!chkCrdIsCorrect);
+
+        return numOfPlayers;
+    }
+
+    public static String inputPlayerName(Scanner input, int playerIdx) {
+//  ------------------------------------------------
+        String cv_printfMsg_nameOfPlayer = "%nEnter the name of Player %d: ";
+
+        System.out.printf(cv_printfMsg_nameOfPlayer, playerIdx + 1);
+        return input.next();
+    }
+
+    public static int setNumOfPlayers(Scanner input) {
+//  ------------------------------------------------
+        String cv_printfMsg_enterPlayers = "%nEnter the number of players [%d...%d]: ";
+        String cv_printfMsg_wrongRng = "%n >> Value %d is out of range, please re-enter%n";
+        String cv_printfMsg_wrongVal = "%n<<< Wrong value '%s' try again! >>>%n";
+        int numOfPlayers = ci_playersMin;
+        boolean chkIsCorrect = false;
+
+        do {
+            try {
+                System.out.printf(cv_printfMsg_enterPlayers, ci_playersMin, ci_playersMax);
+                numOfPlayers = input.nextInt();
+                if (numOfPlayers < ci_playersMin || numOfPlayers > ci_playersMax) {
+                    System.out.printf(cv_printfMsg_wrongRng, numOfPlayers);
+                    continue;
+                } else {
+                    chkIsCorrect = true;
+                }
+            } catch (InputMismatchException e) {                             //Exception or InputMismatchException
+                System.out.printf(cv_printfMsg_wrongVal, input.next());
+            }
+        } while (!chkIsCorrect);
+        return numOfPlayers;
+    }
+
     public static boolean chkIsWinner(char pa_field[][], char chkSymbol) {
 //  ------------------------------------------------
         if (chkMainDiag4Win(pa_field, chkSymbol) || chkCollatDiag4Win(pa_field, chkSymbol)) {
@@ -120,11 +252,11 @@ public class homeWork_04_ticTacToe {
         return true;
     }
 
-    public static void moveAiPlayerRnd(Scanner input, char pa_field[][], char moveSymbol) {
+    public static void moveAiPlayerRnd(char pa_field[][], char moveSymbol) {
 //  ------------------------------------------------
-        boolean cellIsAvail = false;
         Random random = new Random();
         int x, y;
+
         do {
             x = random.nextInt(pa_field.length);
             y = random.nextInt(pa_field.length);
@@ -133,12 +265,38 @@ public class homeWork_04_ticTacToe {
         updField(pa_field, x, y, moveSymbol);
     }
 
-    public static void movePlayer(Scanner input, char pa_field[][], char moveSymbol) {
+    public static int[] getNewCoord4AiMove_01(char pa_field[][], char moveSymbol) {
 //  ------------------------------------------------
-        String cv_runNextMovMsg = "Please, enter the coordinates of the next move (X=[%d...%d]| Y=[%d...%d])%n";
+        int coordinates[] = new int[2];
+/*
+    Strategy I. Find next move with the minimum movements to wiт
+     - check all columns/rows and main/collateral diagonal to fill with the minimum moves
+      for win
+     - if diagonal moves are preferable - take the corners first)
+ */
+
+        return coordinates;
+    }
+
+    public static int[] getNewCoord4AiMove_02(char pa_field[][], char moveSymbol) {
+//  ------------------------------------------------
+        int coordinates[] = new int[2];
+/*
+    Strategy II. calculate number of movements for Win for AI vs Player:
+       - if Player is going to win faster - screw out his next movement
+       - if NOT find the best opportunity for AI for the next movement
+
+ */
+
+        return coordinates;
+    }
+
+    public static void moveHumanPlayer(Scanner input, char pa_field[][], char moveSymbol) {
+//  ------------------------------------------------
+        String cv_printfMsg_runNextMov = "Please, enter the coordinates of the next move (X=[%d...%d]| Y=[%d...%d])%n";
         int x, y;
 
-        System.out.printf(cv_runNextMovMsg, 1, pa_field[0].length, 1, pa_field[0].length);
+        System.out.printf(cv_printfMsg_runNextMov, 1, pa_field[0].length, 1, pa_field[0].length);
         do {
             x = inputCoordinate('X', input, pa_field) - 1;
             y = inputCoordinate('Y', input, pa_field) - 1;
@@ -147,13 +305,13 @@ public class homeWork_04_ticTacToe {
         updField(pa_field, x, y, moveSymbol);
     }
 
-    public static boolean chkCellIsFree(char pa_field[][], int x, int y, boolean suprsOutMsg) {
+    public static boolean chkCellIsFree(char pa_field[][], int x, int y, boolean outMsg) {
 //  ------------------------------------------------
         if (pa_field[y][x] == cc_initTicTacSym) {
             return true;
         } else {
-            if (suprsOutMsg) {
-                System.out.println(" >> Cell already used, please redo.");
+            if (outMsg) {
+                System.out.println("\n >> Cell already used, please redo.\n");
             }
             return false;
         }
@@ -163,12 +321,12 @@ public class homeWork_04_ticTacToe {
 //  ------------------------------------------------
         for (int i = 0; i < pa_field.length; i++) {
             for (int j = 0; j < pa_field[i].length; j++) {
-                if (pa_field[i][j] == cc_initTicTacSym) {
+                if (chkCellIsFree(pa_field, j, i, false)) {
                     return false;
                 }
             }
         }
-        System.out.println(" >> No free cells to next move - it's a Draw!");
+        System.out.println("\n >> No free cells to next move - it's a Draw!\n");
         return true;
     }
 
@@ -179,92 +337,46 @@ public class homeWork_04_ticTacToe {
 
     public static int inputCoordinate(char crdName, Scanner input, char pa_field[][]) {
 //  ------------------------------------------------
-        String cv_wrongRng = "<<< %s-coordinate out of range [%d...%d], try again! >>>%n";
-        String cv_wrongVal = "%n<<< Wrong value '%s' try again! >>>%n";
-        boolean chkCrdIsCorrect = false;
+        String cv_printfMsg_wrongRng = "%n >>%s-coordinate out of range, try again!%n";
+        String cv_printfMsg_wrongVal = "%n<<< Wrong value '%s' try again! >>>%n";
+        boolean chkIsCorrect = false;
         int coordinate = 0;
 
         do {
             try {
                 System.out.print(crdName + " = ");
                 coordinate = input.nextInt();
-                if (coordinate < 1 || coordinate > gi_fieldDim) {
-                    System.out.printf(cv_wrongRng, crdName, 1, gi_fieldDim);
+                if (coordinate < 1 || coordinate > pa_field.length) {
+                    System.out.printf(cv_printfMsg_wrongRng, crdName);
                     continue;
                 } else {
-                    chkCrdIsCorrect = true;
+                    chkIsCorrect = true;
                 }
             } catch (InputMismatchException e) {                             //Exception or InputMismatchException
-                System.out.printf(cv_wrongVal, input.next());
+                System.out.printf(cv_printfMsg_wrongVal, input.next());
             }
-        } while (!chkCrdIsCorrect);
+        } while (!chkIsCorrect);
 
         return coordinate;
     }
 
-    public static boolean chkSellIsFree(char pa_field[][], int x, int y) {
+    public static int initFieldDim(Scanner input, int numOfPlayers) {
 //  ------------------------------------------------
-        if (pa_field[y][x] == cc_crossSym || pa_field[y][x] == cc_zeroSym) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+        String cv_printfMsg_input = "%nPlease specify the field dimension X=Y in range %d...%d: ";
+        String cv_printfMsg_invalidInp01 = "%n<<< Input number is out of range... assigning default value '%d'>>>%n";
+        String cv_printfMsg_invalidInp02 = "%n<<< Invalid value entered... assigning default value '%d'>>>%n";
+        int fieldDimMin = numOfPlayers + 1;
+        int fieldDim = fieldDimMin;
 
-    public static char assgnPlayerSymb(Scanner input) {
-//  ------------------------------------------------
-        String cv_printf_inMsg_01 = "Select a symbol to play for Player_1 ('%c'/'%c'):";
-        String cv_printf_retMsg_01 = " - '%c' is assigned Player_1 to play.%n";
-        String cv_printf_retMsg_02 = " - Invalid input... default value '%c' is assigned to play.";
-        char retVal;
-
-        try {
-            System.out.printf(cv_printf_inMsg_01, cc_crossSym, cc_zeroSym);  // 1st symbol of the string
-            retVal = Character.toUpperCase(input.next().charAt(0));
-            if (retVal != cc_crossSym && retVal != cc_zeroSym) {
-                retVal = cc_crossSym;
-            }
-        } catch (Exception e) {
-            retVal = cc_crossSym;
-            System.out.printf(cv_printf_retMsg_02, retVal);
-            return retVal;
-        }
-        System.out.printf(cv_printf_retMsg_01, retVal);
-        return retVal;
-    }
-
-    public static char assgnAiSymb(char playerSymbol) {
-//  ------------------------------------------------
-        char retVal;
-        String cv_printf_retMsg_01 = " - '%c' is assigned for Player_AI to play.%n";
-
-        switch (playerSymbol) {
-            case cc_crossSym:
-                retVal = cc_zeroSym;
-                break;
-            default:                    // cc_zeroSym
-                retVal = cc_crossSym;
-        }
-        System.out.printf(cv_printf_retMsg_01, retVal);
-        return retVal;
-    }
-
-    public static int initFieldDim(Scanner input) {
-//  ------------------------------------------------
-        String cv_printf_inMsg_01 = "Please specify the field dimension X=Y in range %d...%d: ";
-        String cv_printf_retMsg_01 = "Input number is out of range... assigning default value '%d'%n";
-        String cv_printf_retMsg_02 = "Invalid value entered... assigning default value '%d'%n";
-        int fieldDim = ci_fieldDimDft;
-
-        System.out.printf(cv_printf_inMsg_01, ci_fieldDimMin, ci_fieldDimMax);
+        System.out.printf(cv_printfMsg_input, fieldDimMin, ci_fieldDimMax);
         try {
             fieldDim = input.nextInt();                 // Dimension:  X = Y
-            if (fieldDim > ci_fieldDimMax || fieldDim < ci_fieldDimMin) {
-                fieldDim = ci_fieldDimDft;
-                System.out.printf(cv_printf_retMsg_01, fieldDim);
+            if (fieldDim > ci_fieldDimMax || fieldDim < fieldDimMin) {
+                fieldDim = fieldDimMin;
+                System.out.printf(cv_printfMsg_invalidInp01, fieldDim);
             }
         } catch (Exception e) {
-            System.out.printf(cv_printf_retMsg_02, fieldDim);
+            System.out.printf(cv_printfMsg_invalidInp02, fieldDim);
         }
 
         return fieldDim;
@@ -280,9 +392,9 @@ public class homeWork_04_ticTacToe {
         }
     }
 
-    public static void outputField(char[][] pa_field, int pi_move, char playerSymbol) {
+    public static void outputField(char[][] pa_field, int roundIdx, int moveIdx, String playerName) {
 //  ------------------------------------------------
-        outputFieldHdr(pa_field, pi_move, playerSymbol);
+//        outputFieldHdr(pa_field.length, roundIdx, moveIdx + 1, playerName);
 
         for (int i = 0; i < pa_field.length; i++) {            // Loop by rows
             String outLine = "";
@@ -294,12 +406,17 @@ public class homeWork_04_ticTacToe {
         }
     }
 
-    public static void outputFieldHdr(char[][] pa_field, int pi_move, char playerSymbol) {
+    public static void outputFieldHdr(int fieldLen, int roundIdx, int moveIdx,
+                                      String playerName, char playerSymb) {
 //  ------------------------------------------------
         String outLine = "";
-        for (int i = 0; i < pa_field.length; i++) {           // output horizontal separator
+        for (int i = 0; i < fieldLen; i++) {           // output horizontal separator
             outLine = outLine + "--";
         }
-        System.out.println("\n" + outLine + "--" + " {MOVE-'" + playerSymbol + "': " + pi_move + "} " + "--");
+        outLine = outLine + "--" + " { ";
+        outLine = outLine + "ROUND: " + roundIdx + "| ";
+        outLine = outLine + "Move " + moveIdx + " of player ";
+        outLine = outLine + playerName + " with the chip '" + playerSymb + "'} " + "--";
+        System.out.println("\n" + outLine);
     }
 }
