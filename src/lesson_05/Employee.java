@@ -10,7 +10,7 @@ public class Employee {
     private String eMail;               // 5.email
     private String mainPhone;           // 6.телефон
     private float salary;               // 7.зарплата
-    public int age;                     // 8.возраст
+    private int age;                    // 8.возраст
 
     public Employee() {                                                    // constructor without Parameters
 
