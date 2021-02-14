@@ -14,7 +14,6 @@ persArray[4] = new Person(...);
 5. С помощью цикла вывести информацию только о сотрудниках старше 40 лет.
 * */
 
-import javax.print.attribute.standard.Finishings;
 import java.util.Random;
 
 public class runEmployeeDemo {
@@ -37,16 +36,19 @@ public class runEmployeeDemo {
         for (int i = 0; i < inputData.length; i++) {
             employeeArray[i] = new Employee(inputData[i][0], inputData[i][1], inputData[i][2],
                     inputData[i][3], inputData[i][4], inputData[i][5],
-                    (float) getRundomFromRange(100000, 500000),
-                    getRundomFromRange(18, 66));
+                    (float) getRandomFromRange(100000, 500000),
+                    getRandomFromRange(18, 66));
             System.out.println("\n ---------------------------------");
-            employeeArray[i].outputList4AgeGE(40);
-//            employeeArray[i].displayMainAttr();
+// ---- ver 1.0
+//            employeeArray[i].outputList4AgeGE(40);
+
+// ---- ver 2.0
+           if (employeeArray[i].getAge() > 40) employeeArray[i].displayMainAttr();
         }
 
     }
     //  ===========================================
-    public static int getRundomFromRange(int rangeBoundfrom, int rangeBoundTo) {
+    public static int getRandomFromRange(int rangeBoundfrom, int rangeBoundTo) {
         float rndMath = (float) Math.random();
         int rndNumber = (int) ((rangeBoundTo - rangeBoundfrom) * rndMath + rangeBoundfrom);
         return rndNumber;

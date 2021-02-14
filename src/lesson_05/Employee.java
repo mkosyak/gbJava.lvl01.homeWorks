@@ -48,4 +48,7 @@ public class Employee {
         System.out.println("  Age. . . . . : " + this.age);
 
     }
+    public int getAge(){
+        return  this.age;
+    }
 }
