@@ -16,7 +16,7 @@ public class Cat extends Animal {
 
     @Override
     public void outInfo() {
-        System.out.printf("%n>>>This is a %s --> Name: %s; (%s color) .%n", getSpecies(), name, getColor());
+        System.out.printf("%n>>>This is a %s --> Name: %s (color %s).%n", getSpecies(), name, getColor());
     }
 
     @Override
@@ -25,7 +25,7 @@ public class Cat extends Animal {
         if (jmpLim == 0)
             System.out.printf("%s '%s' can't jump.%n", getSpecies(), name);
         else if (jmpLim >= length) System.out.printf("%s '%s' has jumped %d meters.%n", getSpecies(), name, length);
-        else System.out.printf("%s '%s' can not jump far then %d meters.%n", getSpecies(), name, jmpLim);
+        else System.out.printf("%s '%s' can not jump far than %d meters.%n", getSpecies(), name, jmpLim);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class Cat extends Animal {
         if (runLim == 0)
             System.out.printf("%s '%s' can't jump.%n", getSpecies(), name);
         else if (runLim >= length) System.out.printf("%s '%s' has run %d meters.%n", getSpecies(), name, length);
-        else System.out.printf("%s '%s' can not run far then %d meters.%n", getSpecies(), name, runLim);
+        else System.out.printf("%s '%s' can not run far than %d meters.%n", getSpecies(), name, runLim);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Cat extends Animal {
         if (swmLim == 0)
             System.out.printf("%s '%s' can't jump.%n", getSpecies(), name);
         else if (swmLim >= length) System.out.printf("%s '%s' has swum %d meters.%n", getSpecies(), name, length);
-        else System.out.printf("%s '%s' can not swim far then %d meters.%n", getSpecies(), name, swmLim);
+        else System.out.printf("%s '%s' can not swim far than %d meters.%n", getSpecies(), name, swmLim);
     }
 
     @Override
@@ -52,7 +52,6 @@ public class Cat extends Animal {
         if (flyLim == 0)
             System.out.printf("%s '%s' can't fly.%n", getSpecies(), name);
         else if (flyLim >= length) System.out.printf("%s '%s' has flown  %d meters.%n", getSpecies(), name, length);
-        else System.out.printf("%s '%s' can not fly far then %d meters.%n", getSpecies(), name, flyLim);
+        else System.out.printf("%s '%s' can not fly far than %d meters.%n", getSpecies(), name, flyLim);
     }
-
 }
