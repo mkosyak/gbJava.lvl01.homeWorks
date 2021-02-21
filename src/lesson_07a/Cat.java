@@ -1,10 +1,10 @@
-package lesson_07;
+package lesson_07a;
 
 public class Cat {
     private String name;
     private int appetiteAll;
     private int appetiteCurrent;
-    private  boolean fullness;
+    private boolean fullness;
 
     public Cat(String name, int appetite) {
         this.name = name;

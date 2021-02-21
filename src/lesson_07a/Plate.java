@@ -1,4 +1,4 @@
-package lesson_07;
+package lesson_07a;
 
 public class Plate {
     private int foodLeftOnPlate;
